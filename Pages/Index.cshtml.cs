@@ -18,7 +18,6 @@ namespace Simple_AzStorageAccess.Pages
     {
         private readonly ITokenAcquisition _tokenAcquisition;
         private readonly ILogger<IndexModel> _logger;
-        static readonly string[] scopesToAccessDownstreamApi = new string[] { "https://storage.azure.com/user_impersonation" };
 
         public IndexModel(ILogger<IndexModel> logger, ITokenAcquisition tokenAcquisition)
         {
@@ -28,17 +27,53 @@ namespace Simple_AzStorageAccess.Pages
 
         public void OnGet()
         {
-            string storageaccount = "https://lukedevhosting.blob.core.windows.net/rbac";
-            Uri blobUri = new Uri(storageaccount + "/test.txt");            
-            string accessToken = _tokenAcquisition.GetAccessTokenForUserAsync(scopesToAccessDownstreamApi).Result;
-            TokenCredential token = new TokenAcquisitionTokenCredential(_tokenAcquisition);
-            BlobClient blobClient = new BlobClient(blobUri, token);
-            string blobContents = "Blob created by Azure AD authenticated user.";
-            byte[] byteArray = Encoding.ASCII.GetBytes(blobContents);
-            using (MemoryStream stream = new MemoryStream(byteArray))
-            {
-                blobClient.Upload(stream);
-            }
+            
         }
-    }
+
+        public FileStreamResult OnGetBlob(string storageAccountName, string containerName, string path)
+        {
+            string storageAccount = "https://" + storageAccountName + ".blob.core.windows.net/" + containerName + "/" + path;
+            Stream stream;
+            string contentType;
+            Uri blobUri = new Uri(storageAccount);
+            try
+            {
+                TokenCredential token = new TokenAcquisitionTokenCredential(_tokenAcquisition);
+                BlobClient blobClient = new BlobClient(blobUri, token);
+
+                try
+                {
+                    contentType = blobClient.GetProperties().Value.ContentType;
+                    stream = blobClient.OpenRead();
+                }
+                catch (Exception e)
+                {
+                    contentType = "application/txt";
+                    stream = new MemoryStream(Encoding.ASCII.GetBytes(e.Message));
+                }
+            }
+            catch(Exception e)
+            {
+                contentType = "application/txt";
+                stream = new MemoryStream(Encoding.ASCII.GetBytes(e.Message));
+            }
+
+            return new FileStreamResult(stream, contentType);
+        }
+
+        public void OnPost(string body)
+        {
+            // string storageaccount = "https://lukedevhosting.blob.core.windows.net/rbac";
+            // Uri blobUri = new Uri(storageaccount + "/test.txt");            
+            // string accessToken = _tokenAcquisition.GetAccessTokenForUserAsync(scopesToAccessDownstreamApi).Result;
+            // TokenCredential token = new TokenAcquisitionTokenCredential(_tokenAcquisition);
+            // BlobClient blobClient = new BlobClient(blobUri, token);
+            // string blobContents = "Blob created by Azure AD authenticated user.";
+            // byte[] byteArray = (blobContents);
+            // using (MemoryStream stream = new MemoryStream(byteArray))
+            // {
+            //     blobClient.Upload(stream);
+            // }
+        }
+    }    
 }
