@@ -32,6 +32,7 @@ bld/
 [Ll]ogs/
 
 appsettings.Development.json
+test-*
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
