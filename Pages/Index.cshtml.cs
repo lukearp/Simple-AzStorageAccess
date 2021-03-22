@@ -49,14 +49,16 @@ namespace Simple_AzStorageAccess.Pages
                 catch (Exception e)
                 {
                     contentType = "application/json";
-                    string jsonBody = "{\"Error\": \"" + e.Message + "\"}";
+                    string exceptionString = e.Message.Replace(Environment.NewLine, " ");
+                    string jsonBody = "{\"Error\": \"" + exceptionString + "\"}";
                     stream = new MemoryStream(Encoding.ASCII.GetBytes(jsonBody));
                 }
             }
             catch (Exception e)
             {
                 contentType = "application/json";
-                string jsonBody = "{\"Error\": \"" + e.Message + "\"}";
+                string exceptionString = e.Message.Replace(Environment.NewLine, " ");
+                string jsonBody = "{\"Error\": \"" + exceptionString + "\"}";
                 stream = new MemoryStream(Encoding.ASCII.GetBytes(jsonBody));
             }
 
