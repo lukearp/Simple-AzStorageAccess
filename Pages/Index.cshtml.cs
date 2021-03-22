@@ -27,7 +27,7 @@ namespace Simple_AzStorageAccess.Pages
 
         public void OnGet()
         {
-            
+
         }
 
         public FileStreamResult OnGetBlob(string storageAccountName, string containerName, string path)
@@ -48,14 +48,16 @@ namespace Simple_AzStorageAccess.Pages
                 }
                 catch (Exception e)
                 {
-                    contentType = "application/txt";
-                    stream = new MemoryStream(Encoding.ASCII.GetBytes(e.Message));
+                    contentType = "application/json";
+                    string jsonBody = "{\"Error\": \"" + e.Message + "\"}";
+                    stream = new MemoryStream(Encoding.ASCII.GetBytes(jsonBody));
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                contentType = "application/txt";
-                stream = new MemoryStream(Encoding.ASCII.GetBytes(e.Message));
+                contentType = "application/json";
+                string jsonBody = "{\"Error\": \"" + e.Message + "\"}";
+                stream = new MemoryStream(Encoding.ASCII.GetBytes(jsonBody));
             }
 
             return new FileStreamResult(stream, contentType);
@@ -75,5 +77,5 @@ namespace Simple_AzStorageAccess.Pages
             //     blobClient.Upload(stream);
             // }
         }
-    }    
+    }
 }
