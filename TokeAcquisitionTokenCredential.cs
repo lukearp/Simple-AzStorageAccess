@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core;
@@ -22,10 +23,26 @@ namespace WebAppOpenIDConnectDotNet
         /// <inheritdoc/>
         public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken)
         {
-            AuthenticationResult result = _tokenAcquisition.GetAuthenticationResultForUserAsync(requestContext.Scopes)
-                .GetAwaiter()
-                .GetResult();
-            return new AccessToken(result.AccessToken, result.ExpiresOn);
+            try{
+                AuthenticationResult result = _tokenAcquisition.GetAuthenticationResultForUserAsync(requestContext.Scopes)
+                    .GetAwaiter()
+                    .GetResult();
+                return new AccessToken(result.AccessToken, result.ExpiresOn);
+            }/*
+            catch (MicrosoftIdentityWebChallengeUserException ex)
+            {
+                string message = ex.Message;
+            }
+            */
+            catch(MicrosoftIdentityWebChallengeUserException ex){
+               _tokenAcquisition.ReplyForbiddenWithWwwAuthenticateHeaderAsync(ex.Scopes,ex.MsalUiRequiredException).GetAwaiter().GetResult();
+            }
+            catch (MsalUiRequiredException ex)
+            {
+                 _tokenAcquisition.ReplyForbiddenWithWwwAuthenticateHeaderAsync(new string[] {"user_impersonation"},ex).GetAwaiter().GetResult();
+            }
+            DateTime now = DateTime.Now;
+            return new AccessToken(string.Empty,new DateTimeOffset(now,TimeZoneInfo.Local.GetUtcOffset(now)));
         }
 
         /// <inheritdoc/>

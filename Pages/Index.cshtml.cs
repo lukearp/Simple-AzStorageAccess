@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
+using Microsoft.Identity.Client;
+using Microsoft.Identity.Web.UI;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Azure.Storage.Blobs;
@@ -14,6 +16,8 @@ using System.IO;
 
 namespace Simple_AzStorageAccess.Pages
 {
+    
+    [AuthorizeForScopes(Scopes = new string[] {"https://storage.azure.com/.default"})]
     public class IndexModel : PageModel
     {
         private readonly ITokenAcquisition _tokenAcquisition;
