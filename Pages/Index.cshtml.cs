@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
+using Microsoft.Identity.Client;
+using Microsoft.Identity.Web.UI;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Azure.Storage.Blobs;
@@ -14,6 +16,8 @@ using System.IO;
 
 namespace Simple_AzStorageAccess.Pages
 {
+    
+    [AuthorizeForScopes(Scopes = new string[] {"https://storage.azure.com/.default"})]
     public class IndexModel : PageModel
     {
         private readonly ITokenAcquisition _tokenAcquisition;
@@ -27,11 +31,12 @@ namespace Simple_AzStorageAccess.Pages
 
         public void OnGet()
         {
-
+            
         }
 
         public FileStreamResult OnGetBlob(string storageAccountName, string containerName, string path)
         {
+            string accessToken = _tokenAcquisition.GetAccessTokenForUserAsync(new string [] {"https://storage.azure.com/.default"}).Result;
             string storageAccount = "https://" + storageAccountName + ".blob.core.windows.net/" + containerName + "/" + path;
             Stream stream;
             string contentType;

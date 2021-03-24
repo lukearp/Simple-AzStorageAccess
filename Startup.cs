@@ -34,6 +34,7 @@ namespace Simple_AzStorageAccess
                 .EnableTokenAcquisitionToCallDownstreamApi()
                   .AddDownstreamWebApi("Storage",Configuration.GetSection("Storage"))
                 .AddInMemoryTokenCaches();
+                //.AddDistributedTokenCaches();
 
             services.AddAuthorization(options =>
             {
