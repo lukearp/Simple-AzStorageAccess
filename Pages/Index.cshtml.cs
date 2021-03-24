@@ -31,11 +31,12 @@ namespace Simple_AzStorageAccess.Pages
 
         public void OnGet()
         {
-
+            
         }
 
         public FileStreamResult OnGetBlob(string storageAccountName, string containerName, string path)
         {
+            string accessToken = _tokenAcquisition.GetAccessTokenForUserAsync(new string [] {"https://storage.azure.com/.default"}).Result;
             string storageAccount = "https://" + storageAccountName + ".blob.core.windows.net/" + containerName + "/" + path;
             Stream stream;
             string contentType;
